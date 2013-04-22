@@ -110,6 +110,7 @@ var ChatApp = {
                     // Play a notification sound
                     if (notify) {
                         document.getElementById('notification').play();
+                        pushNotification('Librarian has a new response!', body);
                     }
                     ChatApp.add_message("<div class='message" + delay_css + "'>" + "&lt;<span class='" + nick_class + "'>" + nick + "</span>&gt; <span class='body'>" + body + "</span></div>");
                 } else {
@@ -171,6 +172,14 @@ $(document).ready(function() {
         ChatApp.connection.disconnect();
     });
 
+    if (window.webkitNotifications.checkPermission() == 0) {
+        $('#enable').hide();
+    } else {
+        $('#enable').click(function() {
+            window.webkitNotifications.requestPermission();
+        });
+    }
+
     $('#email').click(function() {
 
         var address = prompt("Please enter your email address", "email@example.com");
@@ -208,7 +217,30 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
+
 });
+
+function pushNotification(title, message) {
+    if (!dopamine.webPush.hasPush()) {
+        if (window.webkitNotifications.checkPermission() == 0) {
+            $('#enable').hide();
+            window.webkitNotifications.createNotification(null, title, message).show();
+        }
+    } else {
+        dopamine.webPush.requestPushUrl(function(url) {
+            $.ajax({
+                url : url,
+                type : "POST",
+                dataType : "json",
+                data : {
+                    action_url : window.location.href,
+                    message : message,
+                    title : title
+                }
+            });
+        });
+    }
+}
 
 function sendMessage(body) {
     var match = body.match(/^\/(.*?)(?: (.*))?$/);
