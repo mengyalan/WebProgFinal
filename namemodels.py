@@ -40,6 +40,16 @@ class Prefix(db.Model):
     a.put()
     return a
 
+  @classmethod
+  def get(cls):
+    rand_num = random.random()
+    prefix = Prefix.all().order('rand_num').filter('rand_num >=', rand_num).get()
+    if prefix is None:
+      prefix = Prefix.all().order('rand_num').get()
+    if prefix is None:
+        return "Missing-"
+    return prefix.prefix
+
 class Body(db.Model) :
   body = db.StringProperty()
   rand_num = db.FloatProperty()
@@ -49,6 +59,15 @@ class Body(db.Model) :
     a = Body(body=body, rand_num = random.random())
     a.put()
     return a
+  @classmethod
+  def get(cls):
+    rand_num = random.random()
+    body = Body.all().order('rand_num').filter('rand_num >=', rand_num).get()
+    if body is None:
+      body = Body.all().order('rand_num').get()
+    if body is None:
+        return "Body"
+    return body.body
 
 class Suffix(db.Model):
   suffix = db.StringProperty()
@@ -59,6 +78,16 @@ class Suffix(db.Model):
     a = Suffix(suffix=suffix, rand_num = random.random())
     a.put()
     return a
+
+  @classmethod
+  def get(cls):
+    rand_num = random.random()
+    suffix = Suffix.all().order('rand_num').filter('rand_num >=', rand_num).get()
+    if suffix is None:
+      suffix = Suffix.all().order('rand_num').get()
+    if suffix is None:
+        return "-Error"
+    return suffix.suffix
 
 class User(db.Model):
   usage = db.BooleanProperty()
