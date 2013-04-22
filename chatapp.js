@@ -21,6 +21,16 @@ var ChatApp = {
     },
 
     add_message : function(msg) {
+        // detect if we are scrolled all the way down
+        var chat = $('#chat').get(0);
+        var at_bottom = chat.scrollTop >= chat.scrollHeight - chat.clientHeight;
+
+        $('#chat').append(msg);
+
+        // if we were at the bottom, keep us at the bottom
+        if (at_bottom) {
+            chat.scrollTop = chat.scrollHeight;
+        }
     },
 
     on_private_message : function(message) {
