@@ -18,6 +18,55 @@ var ChatApp = {
     },
 
     on_public_message : function(message) {
+        var from = $(message).attr('from');
+        var room = Strophe.getBareJidFromJid(from);
+        var nick = Strophe.getResourceFromJid(from);
+
+        // make sure message is from the right place
+        if (room === ChatApp.room) {
+            // is message from a user or the room itself?
+            var notice = !nick;
+            var notify = false;
+            // messages from ourself will be styled differently
+            var nick_class = "nick";
+            if (nick === ChatApp.nickname) {
+                nick_class += " self";
+            } else {
+                notify = true;
+            }
+
+            var body = $(message).children('body').text();
+
+            var delayed = $(message).children("delay").length > 0 || $(message).children("x[xmlns='jabber:x:delay']").length > 0;
+
+            // look for room topic change
+            var subject = $(message).children('subject').text();
+            if (subject) {
+                $('#room-topic').text(subject);
+            }
+
+            if (!notice) {
+                var delay_css = delayed ? " delayed" : "";
+
+                var action = body.match(/\/me (.*)$/);
+                if (!action) {
+                    // Play a notification sound
+                    if (notify) {
+                        document.getElementById('notification').play();
+                    }
+                    ChatApp.add_message("<div class='message" + delay_css + "'>" + "&lt;<span class='" + nick_class + "'>" + nick + "</span>&gt; <span class='body'>" + body + "</span></div>");
+                } else {
+                    ChatApp.add_message("<div class='message action " + delay_css + "'>" + "* " + nick + " " + action[1] + "</div>");
+                }
+            } else {
+                if (body.search('unlocked') > 0) {
+                    ChatApp.unlocked = true;
+                }
+                ChatApp.add_message("<div class='notice'>*** " + body + "</div>");
+            }
+        }
+
+        return true;
     },
 
     add_message : function(msg) {
