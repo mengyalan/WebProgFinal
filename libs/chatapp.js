@@ -174,7 +174,6 @@ $(document).ready(function() {
     $('#email').click(function() {
 
         var address = prompt("Please enter your email address", "email@example.com");
-
         if (email != null) {
             $.ajax({
                 type : 'POST',
@@ -190,7 +189,6 @@ $(document).ready(function() {
                     console.log(resp);
                 }
             });
-            document.getElementById("demo").innerHTML = x;
         } else {
             alert('Invalid email address!');
         }
