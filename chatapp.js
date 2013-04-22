@@ -242,6 +242,34 @@ $(document).bind('connect', function() {
     });
 });
 
+$(document).bind('connected', function() {
+    ChatApp.joined = false;
+    ChatApp.participants = {};
+
+    ChatApp.connection.send($pres().c('priority').t('-1'));
+
+    ChatApp.connection.addHandler(ChatApp.on_presence, null, "presence");
+    ChatApp.connection.addHandler(ChatApp.on_public_message, null, "message", "groupchat");
+    ChatApp.connection.addHandler(ChatApp.on_private_message, null, "message", "chat");
+
+    ChatApp.connection.send($pres({
+        to : ChatApp.room + "/" + ChatApp.nickname
+    }).c('x', {
+        xmlns : ChatApp.NS_MUC
+    }));
+
+    ChatApp.connection.sendIQ($iq({
+        to : ChatApp.room,
+        type : "set"
+    }).c('query', {
+        xmlns : ChatApp.NS_MUC + "#owner"
+    }).c('x', {
+        xmlns : "jabber:x:data",
+        type : "submit"
+    }));
+
+});
+
 function randomNick() {
     var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
 
