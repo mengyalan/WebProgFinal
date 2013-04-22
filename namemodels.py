@@ -91,3 +91,19 @@ class Suffix(db.Model):
 
 class User(db.Model):
   usage = db.BooleanProperty()
+
+  @classmethod
+  def check(cls, name):
+    if name is None:
+        return True
+    user = User.get_by_key_name(name)
+    if user is None:
+        user = User(key_name=name, usage=True)
+        user.put()
+        return False
+    elif user.usage:
+        return True
+    else:
+        user.usage = True
+        user.put()
+    return False
