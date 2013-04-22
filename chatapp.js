@@ -15,6 +15,63 @@ var ChatApp = {
     participants : null,
 
     on_presence : function(presence) {
+        var from = $(presence).attr('from');
+        var room = Strophe.getBareJidFromJid(from);
+
+        // make sure this presence is for the right room
+        if (room === ChatApp.room) {
+            var nick = Strophe.getResourceFromJid(from);
+
+            if ($(presence).attr('type') === 'error' && !ChatApp.joined) {
+                // error joining room; reset app
+                ChatApp.connection.disconnect();
+            } else if (!ChatApp.participants[nick] && $(presence).attr('type') !== 'unavailable') {
+                // add to participant list
+                var user_jid = $(presence).find('item').attr('jid');
+
+                ChatApp.participants[nick] = user_jid || true;
+                $('#participant-list').append('<li>' + nick + '</li>');
+                // if bot is present, toggle
+                if (nick === ChatApp.BOT_SMACK) {
+                    ChatApp.bot_in_room = true;
+                }
+                if (ChatApp.joined) {
+                    $(document).trigger('user_joined', nick);
+                }
+            } else if (ChatApp.participants[nick] && $(presence).attr('type') === 'unavailable') {
+                // remove from participants list
+                ChatApp.participants[nick] = false;
+                // if bot is NOT present, toggle
+                if (nick === ChatApp.BOT_SMACK) {
+                    ChatApp.bot_in_room = false;
+                }
+
+                $('#participant-list li').each(function() {
+                    if (nick === $(this).text()) {
+                        $(this).remove();
+                        return false;
+                    }
+                });
+                $(document).trigger('user_left', nick);
+
+            }
+
+            if ($(presence).attr('type') !== 'error' && !ChatApp.joined) {
+                // check for status 110 to see if it's our own presence
+                // if ($(presence).find("status[code='110']").length > 0) {
+                if (ChatApp.unlocked) {
+                    // check if server changed our nick
+                    if ($(presence).find("status[code='210']").length > 0) {
+                        ChatApp.nickname = Strophe.getResourceFromJid(from);
+                    }
+
+                    // room join complete
+                    $(document).trigger("room_joined");
+                }
+            }
+        }
+
+        return true;
     },
 
     on_public_message : function(message) {
