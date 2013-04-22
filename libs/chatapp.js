@@ -171,6 +171,31 @@ $(document).ready(function() {
         ChatApp.connection.disconnect();
     });
 
+    $('#email').click(function() {
+
+        var address = prompt("Please enter your email address", "email@example.com");
+
+        if (email != null) {
+            $.ajax({
+                type : 'POST',
+                url : '/email',
+                data : {
+                    log : $('#chat').html(),
+                    email : address,
+                    nickname : "Patron"
+                },
+                dataType : 'json',
+                success : function(resp) {
+                    console.info("Ajax Response is there.....");
+                    console.log(resp);
+                }
+            });
+            document.getElementById("demo").innerHTML = x;
+        } else {
+            alert('Invalid email address!');
+        }
+    });
+
     $('#input').keypress(function(ev) {
         if (ev.which === 13) {
 
@@ -279,7 +304,6 @@ $(document).bind('disconnected', function() {
     $('#login_dialog').dialog('open');
 });
 
-
 $(document).bind('room_joined', function() {
     ChatApp.joined = true;
 
@@ -296,7 +320,6 @@ $(document).bind('user_joined', function(ev, nick) {
 $(document).bind('user_left', function(ev, nick) {
     ChatApp.add_message("<div class='notice'>*** " + nick + " left.</div>");
 });
-
 
 function randomNick() {
     var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
