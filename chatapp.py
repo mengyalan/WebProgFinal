@@ -4,6 +4,7 @@ import webapp2
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.api import mail
 
 
 # We set a parent key on the 'Greetings' to ensure that they are all in the same
