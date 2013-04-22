@@ -1,3 +1,31 @@
+var ChatApp = {
+    connection : null,
+    room : null,
+    nickname : null,
+
+    SERVER : "mengyalan.com",
+    CONF_ADDR : "conference.mengyalan.com",
+    BOT : "bot@mengyalan.com",
+    BOT_SMACK : "bot@mengyalan.com/Smack",
+
+    bot_in_room : false,
+    room_created : false,
+    joined : null,
+    unlocked : false,
+    participants : null,
+
+    on_presence : function(presence) {
+    },
+
+    on_public_message : function(message) {
+    },
+
+    add_message : function(msg) {
+    },
+
+    on_private_message : function(message) {
+    }
+};
 
 $(document).ready(function() {
     var name = randomNick();
