@@ -280,6 +280,23 @@ $(document).bind('disconnected', function() {
 });
 
 
+$(document).bind('room_joined', function() {
+    ChatApp.joined = true;
+
+    $('#leave').removeAttr('disabled');
+    $('#room-name').text(ChatApp.room);
+
+    ChatApp.add_message("<div class='notice'>*** Room joined.</div>")
+});
+
+$(document).bind('user_joined', function(ev, nick) {
+    ChatApp.add_message("<div class='notice'>*** " + nick + " joined.</div>");
+});
+
+$(document).bind('user_left', function(ev, nick) {
+    ChatApp.add_message("<div class='notice'>*** " + nick + " left.</div>");
+});
+
 
 function randomNick() {
     var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
