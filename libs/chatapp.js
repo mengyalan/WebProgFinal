@@ -299,6 +299,7 @@ $(document).bind('disconnected', function() {
     $('#room-topic').empty();
     $('#participant-list').empty();
     $('#chat').empty();
+    $('#email').attr('disabled', 'disabled');
     $('#login_dialog').dialog('open');
 });
 
