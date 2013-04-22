@@ -30,8 +30,7 @@ h1 {
 }
 
 #chat-area {
-	float: left;
-	width: 500px;
+	float: center;
 }
 
 #chat {
@@ -40,19 +39,8 @@ h1 {
 	border: solid 1px #ccc;
 }
 
-#participants {
-	float: left;
-	width: 300px;
-	height: 500px;
-	overflow: auto;
-}
-
-#participant-list {
-	list-style: none;
-}
-
 #input {
-	width: 85%;
+	width: 100%;
 	font-size: 100%;
 }
 
