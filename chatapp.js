@@ -241,3 +241,26 @@ $(document).bind('connect', function() {
         }
     });
 });
+
+function randomNick() {
+    var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
+
+    var parts_arr = ['rostr', 'rhyncho', 'ungui', 'chelo', 'onycho', 'pedi', 'podo', 'capit', 'cephalo', 'caud', 'cerco', 'denti', 'odonto', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+    var saurus = 'saurus';
+    var rand_nick = randomArrayValue(color_arr) + randomArrayValue(parts_arr) + saurus;
+    return rand_nick;
+}
+
+function id_gen() {
+    var text = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 8; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+function randomArrayValue(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
