@@ -8,6 +8,12 @@ handlers:
 - url: /stylesheets
   static_dir: stylesheets
 
+- url: /libs
+  static_dir: libs
+
+- url: /assets
+  static_dir: assets
+
 - url: /.*
   script: chatapp.application
 
