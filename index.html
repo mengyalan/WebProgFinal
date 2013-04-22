@@ -19,26 +19,15 @@
 
     <!-- A Notification sound for incoming chat -->
     <audio id="notification" src="assets/notification.mp3" style="display:none;"></audio>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
   </head>
 
   <body>
     <h1>Ask a librarian</h1>
 
-    <div id='toolbar'>
-      <input id='leave' type='button' value='Leave Room' disabled='disabled'>
-      <input id='email' type='button' value='Email Chat History' disabled='disabled'>
-      <input id='enable' type='button' value='Enable Notification(desktop browser)'>
-      
-    </div>
-
     <div>
 
       <div id='chat-area'>
-
-        <div>
-          <div id='room-name'></div>
-          <div id='room-topic'></div>
-        </div>
 
         <div id='chat'></div>
         <textarea id='input'></textarea>
@@ -46,10 +35,12 @@
 
       </div>
 
-      <div id='participants'>
-        <ul id='participant-list'></ul>
-      </div>
+    </div>
 
+    <div id='toolbar'>
+      <input id='leave' type='button' value='Leave Room' disabled='disabled'>
+      <input id='email' type='button' value='Email Chat History' disabled='disabled'>
+      <input id='enable' type='button' value='Enable Notification(desktop browser)'>
     </div>
 
   </body>

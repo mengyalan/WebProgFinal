@@ -1,5 +1,12 @@
 body {
 	font-family: Helvetica;
+	font-size: medium;
+}
+header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
 }
 
 h1 {
@@ -21,7 +28,6 @@ h1 {
 }
 
 #room-name {
-	font-size: 100%;
 	font-weight: bold;
 }
 
@@ -30,30 +36,16 @@ h1 {
 }
 
 #chat-area {
-	float: left;
-	width: 500px;
+	float: center;
+	font-size: medium;
+	padding: 5px;
 }
 
 #chat {
 	overflow: auto;
-	height: 400px;
-	border: solid 1px #ccc;
-}
-
-#participants {
-	float: left;
-	width: 300px;
-	height: 500px;
-	overflow: auto;
-}
-
-#participant-list {
-	list-style: none;
-}
-
-#input {
-	width: 85%;
-	font-size: 100%;
+	border: solid 2px #ccc;
+	font-size: medium;
+	padding: 5px;
 }
 
 .notice {
@@ -92,4 +84,8 @@ h1 {
 
 .action {
 	color: #333;
+}
+
+button {
+	font-size: medium;
 }

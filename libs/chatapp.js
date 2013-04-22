@@ -173,7 +173,7 @@ $(document).ready(function() {
     });
 
     if (window.webkitNotifications.checkPermission() == 0) {
-        $('#enable').hide();
+        $('#enable').closest('.ui-btn').hide();
     } else {
         $('#enable').click(function() {
             window.webkitNotifications.requestPermission();
@@ -223,7 +223,7 @@ $(document).ready(function() {
 function pushNotification(title, message) {
     if (!dopamine.webPush.hasPush()) {
         if (window.webkitNotifications.checkPermission() == 0) {
-            $('#enable').hide();
+            $('#enable').closest('.ui-btn').hide();
             window.webkitNotifications.createNotification(null, title, message).show();
         }
     } else {
