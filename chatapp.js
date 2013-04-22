@@ -101,3 +101,15 @@ $(document).ready(function() {
         }
     });
 });
+
+$(document).bind('connect', function() {
+    ChatApp.connection = new Strophe.Connection('http://bosh.metajack.im:5280/xmpp-httpbind');
+
+    ChatApp.connection.connect(ChatApp.SERVER, null, function(status) {
+        if (status === Strophe.Status.CONNECTED) {
+            $(document).trigger('connected');
+        } else if (status === Strophe.Status.DISCONNECTED) {
+            $(document).trigger('disconnected');
+        }
+    });
+});
