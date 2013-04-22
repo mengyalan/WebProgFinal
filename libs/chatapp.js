@@ -308,6 +308,7 @@ $(document).bind('room_joined', function() {
     ChatApp.joined = true;
 
     $('#leave').removeAttr('disabled');
+    $('#email').removeAttr('disabled');
     $('#room-name').text(ChatApp.room);
 
     ChatApp.add_message("<div class='notice'>*** Room joined.</div>")
