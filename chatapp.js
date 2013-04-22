@@ -24,6 +24,18 @@ var ChatApp = {
     },
 
     on_private_message : function(message) {
+        var from = $(message).attr('from');
+        var room = Strophe.getBareJidFromJid(from);
+        var nick = Strophe.getResourceFromJid(from);
+
+        // make sure this message is from the correct room
+        if (room === ChatApp.room) {
+            var body = $(message).children('body').text();
+            ChatApp.add_message("<div class='message private'>" + "@@ &lt;<span class='nick'>" + nick + "</span>&gt; <span class='body'>" + body + "</span> @@</div>");
+
+        }
+
+        return true;
     }
 };
 
