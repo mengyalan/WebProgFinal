@@ -194,64 +194,72 @@ $(document).ready(function() {
         }
     });
 
+    $('#send').click(function() {
+        var body = $('#input').val();
+        sendMessage(body);
+        $('#input').val('');
+    });
+
     $('#input').keypress(function(ev) {
         if (ev.which === 13) {
-
             ev.preventDefault();
-
             var body = $(this).val();
-            var match = body.match(/^\/(.*?)(?: (.*))?$/);
-            var args = null;
-            if (match) {
-                if (match[1] === "msg") {
-                    args = match[2].match(/^(.*?) (.*)$/);
-
-                    if (ChatApp.participants[args[1]]) {
-                        ChatApp.connection.send($msg({
-                            to : ChatApp.room + "/" + args[1],
-                            type : "chat"
-                        }).c('body').t(body));
-                        ChatApp.add_message("<div class='message private'>" + "@@ &lt;<span class='nick self'>" + ChatApp.nickname + "</span>&gt; <span class='body'>" + args[2] + "</span> @@</div>");
-                    } else {
-                        ChatApp.add_message("<div class='notice error'>" + "Error: User not in room." + "</div>");
-                    }
-                } else {
-                    ChatApp.add_message("<div class='notice error'>" + "Error: Command is not allowed." + "</div>");
-                }
-            } else {
-                if (ChatApp.room_created) {
-                    // Room created :
-                    // if bot is NOT in room
-                    // invite bot again
-                    if (!ChatApp.bot_in_room) {
-                        ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
-                    }
-
-                    // just send msg
-                    ChatApp.connection.send($msg({
-                        to : ChatApp.room,
-                        type : "groupchat"
-                    }).c('body').t(body));
-
-                } else {
-                    // Create room, toggle
-                    // room_created, and send
-                    // the message
-                    ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
-                    ChatApp.room_created = true;
-
-                    ChatApp.connection.send($msg({
-                        to : ChatApp.room,
-                        type : "groupchat"
-                    }).c('body').t(body));
-
-                }
-            }
-
+            sendMessage(body);
             $(this).val('');
         }
     });
 });
+
+function sendMessage(body) {
+    var match = body.match(/^\/(.*?)(?: (.*))?$/);
+    var args = null;
+    if (match) {
+        if (match[1] === "msg") {
+            args = match[2].match(/^(.*?) (.*)$/);
+
+            if (ChatApp.participants[args[1]]) {
+                ChatApp.connection.send($msg({
+                    to : ChatApp.room + "/" + args[1],
+                    type : "chat"
+                }).c('body').t(body));
+                ChatApp.add_message("<div class='message private'>" + "@@ &lt;<span class='nick self'>" + ChatApp.nickname + "</span>&gt; <span class='body'>" + args[2] + "</span> @@</div>");
+            } else {
+                ChatApp.add_message("<div class='notice error'>" + "Error: User not in room." + "</div>");
+            }
+        } else {
+            ChatApp.add_message("<div class='notice error'>" + "Error: Command is not allowed." + "</div>");
+        }
+    } else {
+        if (ChatApp.room_created) {
+            // Room created :
+            // if bot is NOT in room
+            // invite bot again
+            if (!ChatApp.bot_in_room) {
+                ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
+            }
+
+            // just send msg
+            ChatApp.connection.send($msg({
+                to : ChatApp.room,
+                type : "groupchat"
+            }).c('body').t(body));
+
+        } else {
+            // Create room, toggle
+            // room_created, and send
+            // the message
+            ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
+            ChatApp.room_created = true;
+
+            ChatApp.connection.send($msg({
+                to : ChatApp.room,
+                type : "groupchat"
+            }).c('body').t(body));
+
+        }
+    }
+}
+
 
 $(document).bind('connect', function() {
     ChatApp.connection = new Strophe.Connection('http://bosh.metajack.im:5280/xmpp-httpbind');
