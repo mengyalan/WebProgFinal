@@ -36,7 +36,7 @@ class SendChatLog(webapp2.RequestHandler):
         message = mail.EmailMessage(sender=librarian, subject=title)
         
         message.to = patron
-        message.body = log
+        message.html = log
         
         message.send()
         self.redirect('/')
