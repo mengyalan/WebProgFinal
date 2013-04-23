@@ -8,11 +8,6 @@ import webapp2
 import random
 
 from google.appengine.ext import db
-from google.appengine.api import users
-from google.appengine.ext import bulkload
-from google.appengine.api import datastore_types
-import jinja2
-import os
 
 class Unique(db.Model):
   @classmethod
@@ -28,7 +23,7 @@ class Unique(db.Model):
     
 class UniqueConstraintViolation(Exception):
   def __init__(self, scope, value):
-    super(UniqueConstraintViolation, self).__init__("Value '%s' is not unique within scope '%s'." % (value, scope, ))
+    super(UniqueConstraintViolation, self).__init__("Value '%s' is not unique within scope '%s'." % (value, scope,))
 
 class Prefix(db.Model):
   prefix = db.StringProperty()
@@ -36,10 +31,9 @@ class Prefix(db.Model):
   @classmethod
   def create(cls, prefix):
     Unique.check("prefix", prefix)
-    a = Prefix(prefix=prefix, rand_num = random.random())
+    a = Prefix(prefix=prefix, rand_num=random.random())
     a.put()
     return a
-
   @classmethod
   def get(cls):
     rand_num = random.random()
@@ -56,7 +50,7 @@ class Body(db.Model) :
   @classmethod
   def create(cls, body):
     Unique.check("body", body)
-    a = Body(body=body, rand_num = random.random())
+    a = Body(body=body, rand_num=random.random())
     a.put()
     return a
   @classmethod
@@ -75,10 +69,9 @@ class Suffix(db.Model):
   @classmethod
   def create(cls, suffix):
     Unique.check("suffix", suffix)
-    a = Suffix(suffix=suffix, rand_num = random.random())
+    a = Suffix(suffix=suffix, rand_num=random.random())
     a.put()
     return a
-
   @classmethod
   def get(cls):
     rand_num = random.random()
@@ -107,3 +100,92 @@ class User(db.Model):
         user.usage = True
         user.put()
     return False
+  @classmethod
+  def set(cls, name, state):
+    if name is None:
+        return
+    user = User.get_by_key_name(name)
+    if user is None:
+        user = User(key_name=name)
+    user.usage = state
+    user.put()
+  @classmethod
+  def reset(cls):
+      query = User.all()
+      entries = query.fetch(1000)
+      db.delete(entries)
+
+try:
+    Prefix.create('atri')
+except UniqueConstraintViolation:
+    pass
+try:
+    Prefix.create('nigri')
+except UniqueConstraintViolation:
+    pass
+try:
+    Prefix.create('melano')
+except UniqueConstraintViolation:
+    pass
+try:
+    Prefix.create('cerule')
+except UniqueConstraintViolation:
+    pass
+try:
+    Prefix.create('cyano')
+except UniqueConstraintViolation:
+    pass
+try:
+    Prefix.create('viridi')
+except UniqueConstraintViolation:
+    pass
+
+try:
+    Body.create('rostr')
+except UniqueConstraintViolation:
+    pass
+try:
+    Body.create('rhyncho')
+except UniqueConstraintViolation:
+    pass
+try:
+    Body.create('ungui')
+except UniqueConstraintViolation:
+    pass
+try:
+    Body.create('chelo')
+except UniqueConstraintViolation:
+    pass
+try:
+    Body.create('onycho')
+except UniqueConstraintViolation:
+    pass
+try:
+    Body.create('pedi')
+except UniqueConstraintViolation:
+    pass
+
+try:
+    Suffix.create('saurus')
+except UniqueConstraintViolation:
+    pass
+try:
+    Suffix.create('raptor')
+except UniqueConstraintViolation:
+    pass
+try:
+    Suffix.create('don')
+except UniqueConstraintViolation:
+    pass
+try:
+    Suffix.create('ceratops')
+except UniqueConstraintViolation:
+    pass
+try:
+    Suffix.create('stuthio')
+except UniqueConstraintViolation:
+    pass
+try:
+    Suffix.create('nyx')
+except UniqueConstraintViolation:
+    pass
