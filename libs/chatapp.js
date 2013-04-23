@@ -156,7 +156,7 @@ var ChatApp = {
 };
 
 $(document).ready(function() {
-    var name = randomNick();
+    var name = $('#username').html();
     ChatApp.nickname = name;
     ChatApp.room = name + id_gen() + "@" + ChatApp.CONF_ADDR;
 
@@ -350,4 +350,12 @@ function id_gen() {
 
 function randomArrayValue(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+window.onbeforeunload = confirmExit;
+function confirmExit() {
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/disconnect/?from='+ChatApp.nickname, true);
+	xhr.send();
+	return null;
 }
