@@ -2,6 +2,8 @@
 <html>
 
   <head>
+    <meta charset="utf-8">
+
     <title>Ask a librarian</title>
 
     <!-- The Javascript Library written by other people -->
@@ -18,30 +20,66 @@
 
     <!-- A Notification sound for incoming chat -->
     <audio id="notification" src="assets/notification.mp3" style="display:none;"></audio>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no" />
+
   </head>
 
   <body>
-    <h1>Ask a librarian</h1>
-
-    <div>
-
-<div id='username'>{{ name }}</div>
-      <div id='chat-area'>
-
-
-        <div id='chat'></div>
-        <textarea id='input'></textarea>
-        <input id='send' type='button' value='Send'>
-
-      </div>
-
+    <div class="info message">
+      <h3>FYI, something just happened!</h3>
+      <p>
+        This is just an info notification message.
+      </p>
     </div>
 
-    <div id='toolbar'>
-      <input id='leave' type='button' value='Leave Room' disabled='disabled'>
-      <input id='email' type='button' value='Email Chat History' disabled='disabled'>
+    <div class="error message">
+      <h3>Ups, an error ocurred</h3>
+      <p>
+        This is just an error notification message.
+      </p>
     </div>
 
+    <div class="warning message">
+      <h3>This app is still under development!</h3>
+      <p>
+        Please note that most of the time the development server is down, any messages sent will NOT be received.
+      </p>
+    </div>
+
+    <div class="success message">
+      <h3>Congrats, you did it!</h3>
+      <p>
+        This is just a success notification message.
+      </p>
+    </div>
+    <div data-role="page" id="page1">
+      <div id='header' data-theme="a" data-role="header">
+
+        <h1>Ask a librarian</h1>
+      </div><!-- /header -->
+
+      <div id='content' data-role="content">
+        <div id='chat-area'>
+
+          <div id='chat'></div>
+          <textarea id='input'></textarea>                              
+
+
+
+
+          <div id='toolbar'>
+            <input id='send' type='button' value='Send' data-inline="true" data-theme="b"/>
+            <input id='leave' type='button' value='Leave Room' data-inline="true" data-theme="b"/>
+            <input id='enable' type='button' value='Enable Notification' data-inline="true" data-theme="b"/>
+          </div>
+        </div><!-- /content -->
+
+        <div id='footer' data-role="footer" data-position="fixed">
+          <h4><a id='username'></a></h4>
+
+        </div><!-- /footer -->
+
+      </div><!-- /page -->
   </body>
 
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYFPE HTML>
+<html>
+
+  <head>
+    <title>Ask a librarian</title>
+
+    <!-- The Javascript Library written by other people -->
+    <script src='libs/jquery.js'></script>
+    <script src='libs/jquery-ui.js'></script>
+    <script src='libs/strophe.js'></script>
+    <script src="libs/strophe.muc.js"></script>
+    <link rel='stylesheet' href='stylesheets/jquery-ui.css'>
+
+    <!-- The Stylesheet we wrote -->
+    <link rel='stylesheet' href='stylesheets/chatapp.css'>
+    <!-- The Javascript Library we wrote -->
+    <script src="libs/chatapp.js"></script>
+
+    <!-- A Notification sound for incoming chat -->
+    <audio id="notification" src="assets/notification.mp3" style="display:none;"></audio>
+  </head>
+
+  <body>
+    <h1>Ask a librarian</h1>
+
+    <div>
+
+<div id='username'>{{ name }}</div>
+      <div id='chat-area'>
+
+
+        <div id='chat'></div>
+        <textarea id='input'></textarea>
+        <input id='send' type='button' value='Send'>
+
+      </div>
+
+    </div>
+
+    <div id='toolbar'>
+      <input id='leave' type='button' value='Leave Room' disabled='disabled'>
+      <input id='email' type='button' value='Email Chat History' disabled='disabled'>
+    </div>
+
+  </body>
+
+</html>

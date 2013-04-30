@@ -1,137 +1,13 @@
-var myMessages = ['info', 'warning', 'error', 'success'];
-
-function hideAllMessages() {
-    var messagesHeights = new Array();
-    // this array will store height for each
-
-    for ( i = 0; i < myMessages.length; i++) {
-        messagesHeights[i] = $('.' + myMessages[i]).outerHeight();
-        // fill array
-        $('.' + myMessages[i]).css('top', -messagesHeights[i]);
-        //move element outside viewport
-    }
-}
-
-function showMessage(type) {
-    $('.' + type + '-trigger').click(function() {
-        hideAllMessages();
-        $('.' + type).animate({
-            top : "0"
-        }, 500);
-    });
-}
-
-sanitize = function(html, settings) {
-    settings = settings || {};
-    var sanitized = '';
-
-    function advance(n) {
-        if ( typeof n === 'string') {
-            sanitized += n;
-            n = n.length;
-        }
-        html = html.slice(n);
-    }
-
-    var match;
-    while (html.length) {
-        if ( match = html.match(/^[^<]+/)) {// cdata
-            sanitized += match[0].replace(/>/g, '&gt;')
-            advance(match[0].length);
-            continue;
-        }
-
-        var endPos = html.indexOf('>');
-
-        if (endPos === -1) {
-            // discard tag
-            advance(html.length);
-            continue;
-        }
-
-        var tag = html.slice(0, endPos + 1);
-
-        if ( match = tag.match(/^<\/([a-zA-Z]+)>$/)) {// end tag
-            var tagName = match[1];
-            advance(settings[tagName] ? match[0] : match[0].length);
-            continue;
-        }
-
-        if ( match = tag.match(/^<([a-zA-Z]+)(?:\s+(.+))?\s*\/?>$/)) {
-            var tagName = match[1].toLowerCase(), attrs = match[2];
-
-            if (settings[tagName]) {
-                var attributes = {};
-                while (attrs) {// read attributes
-                    var key = attrs.match(/^[a-zA-Z]+/);
-                    if (!key)
-                        break;
-                    key = key[0];
-                    attrs = attrs.slice(key.length);
-
-                    if (attrs[0] === '=') {
-                        attrs = attrs.slice(1);
-                        if (/['"]/.exec(attrs[0])) {
-                            var quote = attrs[0];
-                            var closingPos = attrs.indexOf(quote, 1);
-                            if (closingPos === -1)
-                                break;
-                            attributes[key] = attrs.slice(1, closingPos);
-                            attrs = attrs.slice(closingPos + 1);
-                        } else if (!attrs[0].exec(/\s/)) {
-                            var value = attrs.match(/^[^\s]+/);
-                            if (!value)
-                                break;
-                            value = value[0];
-                            attrs = attrs.slice(value.length);
-                            attributes[key] = value;
-                        } else {
-                            break;
-                        }
-                    } else if (attrs[0].exec(/\s/)) {
-                        attributes[key] = key;
-                    } else {
-                        break;
-                    }
-
-                    var ws = attrs.match(/^\s+/);
-                    if (!ws)
-                        break;
-                    attrs = attrs.slice(ws[0].length);
-                }
-
-                sanitized += '<' + tagName;
-
-                // validate and write attributes
-                for (var key in attributes) {
-                    var validator;
-                    if (attributes.hasOwnProperty(key) && ( validator = settings[tagName][key])) {
-                        var value = attributes[key].replace(/"/g, '&quot;');
-                        if ( typeof validator === 'function' && !validator(value))
-                            continue;
-                        sanitized += ' ' + key + '="' + value + '"';
-                    }
-                }
-
-                sanitized += '>';
-            }
-        }
-
-        advance(tag.length);
-    }
-
-    return sanitized;
-}
 var ChatApp = {
     connection : null,
     room : null,
     nickname : null,
 
-    NS_MUC : "http://jabber.org/protocol/muc",
-    SERVER : "chatdev.library.illinois.edu",
-    CONF_ADDR : "conference.chatdev.library.illinois.edu",
-    BOT : "bot@chatdev.library.illinois.edu",
-    BOT_SMACK : "bot@chatdev.library.illinois.edu/Smack",
+    SERVER : "mengyalan.com",
+    CONF_ADDR : "conference.mengyalan.com",
+    BOT : "bot@mengyalan.com",
+    BOT_SMACK : "bot@mengyalan.com/Smack",
+
     bot_in_room : false,
     room_created : false,
     joined : null,
@@ -234,7 +110,6 @@ var ChatApp = {
                     // Play a notification sound
                     if (notify) {
                         document.getElementById('notification').play();
-                        pushNotification('Librarian has a new response!', body);
                     }
                     ChatApp.add_message("<div class='message" + delay_css + "'>" + "&lt;<span class='" + nick_class + "'>" + nick + "</span>&gt; <span class='body'>" + body + "</span></div>");
                 } else {
@@ -255,8 +130,7 @@ var ChatApp = {
         // detect if we are scrolled all the way down
         var chat = $('#chat').get(0);
         var at_bottom = chat.scrollTop >= chat.scrollHeight - chat.clientHeight;
-        // alert(msg);
-        // sanitize(msg);
+
         $('#chat').append(msg);
 
         // if we were at the bottom, keep us at the bottom
@@ -281,42 +155,8 @@ var ChatApp = {
     }
 };
 
-function randomNick() {
-    var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
-
-    var parts_arr = ['rostr', 'rhyncho', 'ungui', 'chelo', 'onycho', 'pedi', 'podo', 'capit', 'cephalo', 'caud', 'cerco', 'denti', 'odonto', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
-    var saurus = 'saurus';
-    var rand_nick = randomArrayValue(color_arr) + randomArrayValue(parts_arr) + saurus;
-    return rand_nick;
-}
-
-function id_gen() {
-    var text = "";
-    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
-
-    for (var i = 0; i < 8; i++)
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-}
-
-function randomArrayValue(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-}
-
-
-$(window).unload(function() {
-    alert("Bye now!");
-    $(document).trigger('disconnected');
-});
-
 $(document).ready(function() {
-    // Initially, hide all messages
-    hideAllMessages();
-    // Show warning
-    showMessage(myMessages[1]);
-
-    var name = randomNick();
+    var name = $('#username').html();
     ChatApp.nickname = name;
     ChatApp.room = name + id_gen() + "@" + ChatApp.CONF_ADDR;
 
@@ -331,12 +171,33 @@ $(document).ready(function() {
         ChatApp.connection.disconnect();
     });
 
+    $('#email').click(function() {
+
+        var address = prompt("Please enter your email address", "email@example.com");
+        if (email != null) {
+            $.ajax({
+                type : 'POST',
+                url : '/email',
+                data : {
+                    log : $('#chat').html(),
+                    email : address,
+                    nickname : "Patron"
+                },
+                dataType : 'json',
+                success : function(resp) {
+                    console.info("Ajax Response is there.....");
+                    console.log(resp);
+                }
+            });
+        } else {
+            alert('Invalid email address!');
+        }
+    });
+
     $('#send').click(function() {
         var body = $('#input').val();
-        if (body) {
-            sendMessage(body);
-            $('#input').val('');
-        }
+        sendMessage(body);
+        $('#input').val('');
     });
 
     $('#input').keypress(function(ev) {
@@ -347,39 +208,7 @@ $(document).ready(function() {
             $(this).val('');
         }
     });
-
-    if (window.webkitNotifications.checkPermission() == 0) {
-        $('#enable').closest('.ui-btn').hide();
-    } else {
-        $('#enable').click(function() {
-            window.webkitNotifications.requestPermission();
-        });
-    }
-    $('#leave').closest('.ui-btn').hide();
 });
-$(window).ready(updateHeight);
-$(window).resize(updateHeight);
-$(document).ready(updateHeight);
-$(document).resize(updateHeight);
-
-function updateHeight() {
-    var content_height = $(window).height() - $('#header').height() - $('#footer').height();
-    var input = $('#input');
-    var input_height = input.height();
-
-    var toolbar = $('#toolbar');
-    var toolbar_height = toolbar.height();
-
-    var chat = $('#chat');
-    chat.css('height', 0.8 * (content_height - input_height - toolbar_height) - 30);
-}
-
-function pushNotification(title, message) {
-    if (window.webkitNotifications.checkPermission() == 0) {
-        $('#enable').closest('.ui-btn').hide();
-        window.webkitNotifications.createNotification(null, title, message).show();
-    }
-}
 
 function sendMessage(body) {
     var match = body.match(/^\/(.*?)(?: (.*))?$/);
@@ -387,12 +216,13 @@ function sendMessage(body) {
     if (match) {
         if (match[1] === "msg") {
             args = match[2].match(/^(.*?) (.*)$/);
+
             if (ChatApp.participants[args[1]]) {
                 ChatApp.connection.send($msg({
                     to : ChatApp.room + "/" + args[1],
                     type : "chat"
                 }).c('body').t(body));
-                ChatApp.add_message("<div class='message private'>" + "@@ &lt;<span class='nick self'>" + ChatApp.nickname + "</span>&gt; <span class='body'>" + +"</span> @@</div>");
+                ChatApp.add_message("<div class='message private'>" + "@@ &lt;<span class='nick self'>" + ChatApp.nickname + "</span>&gt; <span class='body'>" + args[2] + "</span> @@</div>");
             } else {
                 ChatApp.add_message("<div class='notice error'>" + "Error: User not in room." + "</div>");
             }
@@ -407,12 +237,12 @@ function sendMessage(body) {
             if (!ChatApp.bot_in_room) {
                 ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
             }
+
             // just send msg
-            var safestr = sanitize(body);
             ChatApp.connection.send($msg({
                 to : ChatApp.room,
                 type : "groupchat"
-            }).c('body').t(safestr));
+            }).c('body').t(body));
 
         } else {
             // Create room, toggle
@@ -420,20 +250,19 @@ function sendMessage(body) {
             // the message
             ChatApp.connection.muc.invite(ChatApp.room, ChatApp.BOT, body);
             ChatApp.room_created = true;
-            var safestr = sanitize(body);
+
             ChatApp.connection.send($msg({
                 to : ChatApp.room,
                 type : "groupchat"
-            }).c('body').t(safestr));
+            }).c('body').t(body));
 
         }
     }
-
 }
 
 
 $(document).bind('connect', function() {
-    ChatApp.connection = new Strophe.Connection('/xmpp-httpbind');
+    ChatApp.connection = new Strophe.Connection('http://bosh.metajack.im:5280/xmpp-httpbind');
 
     ChatApp.connection.connect(ChatApp.SERVER, null, function(status) {
         if (status === Strophe.Status.CONNECTED) {
@@ -478,14 +307,16 @@ $(document).bind('disconnected', function() {
     $('#room-topic').empty();
     $('#participant-list').empty();
     $('#chat').empty();
+    $('#email').attr('disabled', 'disabled');
     $('#login_dialog').dialog('open');
-    $('#leave').closest('.ui-btn').hide();
 });
 
 $(document).bind('room_joined', function() {
     ChatApp.joined = true;
 
-    $('#leave').closest('.ui-btn').show();
+    $('#leave').removeAttr('disabled');
+    $('#email').removeAttr('disabled');
+    $('#room-name').text(ChatApp.room);
 
     ChatApp.add_message("<div class='notice'>*** Room joined.</div>")
 });
@@ -497,3 +328,34 @@ $(document).bind('user_joined', function(ev, nick) {
 $(document).bind('user_left', function(ev, nick) {
     ChatApp.add_message("<div class='notice'>*** " + nick + " left.</div>");
 });
+
+function randomNick() {
+    var color_arr = ['atri', 'nigri', 'melano', 'cerule', 'cyano', 'viridi', 'chloro', 'albi', 'leuco', 'flav', 'xantho', 'pumili', 'nano', 'ingenti', 'colosso', 'grandi', 'macro', 'mega', 'brevi', 'brachy', 'proceri', 'alti', 'aepy', 'cyrto', 'gampso', 'ovat', 'plani', 'platy', 'cavi', 'coelo', 'cornut', 'cerato', 'circuli', 'cyclo', 'gyro', 'nudi', 'gymno', 'criniti', 'pogono', 'hirsut', 'lasio', 'trichodo', 'asper', 'trachy', 'spini', 'acantho', 'echino', 'corrugat', 'rugos', 'mono', 'uni', 'bi', 'duo', 'di', 'tri', 'tria', 'quadri', 'tetra', 'septem', 'hepta', 'decim', 'deca', 'allo', 'apato', 'bronto', 'compso', 'elasmo', 'nodo', 'ops', 'ornitho', 'raptor', 'stego', 'tyranno', 'clevergirl', 'michaelo', 'partygirl', 'depression', 'chubby', 'lol', 'noreen', 'shelli', 'maya', 'petero', 'cheong', 'shan', 'merle', 'coconut', 'apple', 'java', 'pythono', 'chambana', 'testing', 'bisexual'];
+
+    var parts_arr = ['rostr', 'rhyncho', 'ungui', 'chelo', 'onycho', 'pedi', 'podo', 'capit', 'cephalo', 'caud', 'cerco', 'denti', 'odonto', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+    var saurus = 'saurus';
+    var rand_nick = randomArrayValue(color_arr) + randomArrayValue(parts_arr) + saurus;
+    return rand_nick;
+}
+
+function id_gen() {
+    var text = "";
+    var possible = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+    for (var i = 0; i < 8; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+function randomArrayValue(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+window.onbeforeunload = confirmExit;
+function confirmExit() {
+	var xhr = new XMLHttpRequest();
+	xhr.open('POST', '/disconnect/?from='+ChatApp.nickname, true);
+	xhr.send();
+	return null;
+}
