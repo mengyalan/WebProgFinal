@@ -35,7 +35,7 @@ class Prefix(db.Model):
     a.put()
     return a
   @classmethod
-  def get(cls):
+  def getRandom(cls):
     rand_num = random.random()
     prefix = Prefix.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if prefix is None:
@@ -54,7 +54,7 @@ class Body(db.Model) :
     a.put()
     return a
   @classmethod
-  def get(cls):
+  def getRandom(cls):
     rand_num = random.random()
     body = Body.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if body is None:
@@ -73,7 +73,7 @@ class Suffix(db.Model):
     a.put()
     return a
   @classmethod
-  def get(cls):
+  def getRandom(cls):
     rand_num = random.random()
     suffix = Suffix.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if suffix is None:
@@ -84,35 +84,39 @@ class Suffix(db.Model):
 
 class User(db.Model):
   usage = db.BooleanProperty()
-
+  RESET_AMOUNT = 1000
+  
   @classmethod
-  def check(cls, name):
+  def isNotAvailable(cls, name):
     if name is None:
         return True
     user = User.get_by_key_name(name)
     if user is None:
-        user = User(key_name=name, usage=True)
+        user = User(key_name=name, usage=False)
         user.put()
-        return False
-    elif user.usage:
-        return True
-    else:
-        user.usage = True
-        user.put()
-    return False
+    return user.usage
   @classmethod
-  def set(cls, name, state):
+  def claim(cls, name):
     if name is None:
         return
     user = User.get_by_key_name(name)
     if user is None:
         user = User(key_name=name)
-    user.usage = state
+    user.usage = True
+    user.put()
+  @classmethod
+  def release(cls, name):
+    if name is None:
+        return
+    user = User.get_by_key_name(name)
+    if user is None:
+        user = User(key_name=name)
+    user.usage = False
     user.put()
   @classmethod
   def reset(cls):
       query = User.all()
-      entries = query.fetch(1000)
+      entries = query.fetch(RESET_AMOUNT)
       db.delete(entries)
 
 try:
