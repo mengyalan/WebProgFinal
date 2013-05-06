@@ -12,6 +12,8 @@ from google.appengine.ext import db
 class Unique(db.Model):
   @classmethod
   def check(cls, scope, value):
+    # Checks whether the value is a unique value or not.
+    # Code from http://squeeville.com/2009/01/30/add-a-unique-constraint-to-google-app-engine/
     def tx(scope, value):
       key_name = "U%s:%s" % (scope, value,)
       ue = Unique.get_by_key_name(key_name)
@@ -28,14 +30,18 @@ class UniqueConstraintViolation(Exception):
 class Prefix(db.Model):
   prefix = db.StringProperty()
   rand_num = db.FloatProperty()
+  
   @classmethod
   def create(cls, prefix):
+    # Creates a new prefix. Method ensures uniqueness
     Unique.check("prefix", prefix)
     a = Prefix(prefix=prefix, rand_num=random.random())
     a.put()
     return a
+
   @classmethod
   def getRandom(cls):
+    # Gets a random prefix from the datastore. Returns string
     rand_num = random.random()
     prefix = Prefix.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if prefix is None:
@@ -44,17 +50,21 @@ class Prefix(db.Model):
         return "Missing-"
     return prefix.prefix
 
-class Body(db.Model) :
+class Body(db.Model):
   body = db.StringProperty()
   rand_num = db.FloatProperty()
+  
   @classmethod
   def create(cls, body):
+    # Creates a new word-body. Method ensures uniqueness
     Unique.check("body", body)
     a = Body(body=body, rand_num=random.random())
     a.put()
     return a
+
   @classmethod
   def getRandom(cls):
+    # Gets a random word-body from the datastore. Returns string
     rand_num = random.random()
     body = Body.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if body is None:
@@ -66,14 +76,18 @@ class Body(db.Model) :
 class Suffix(db.Model):
   suffix = db.StringProperty()
   rand_num = db.FloatProperty()
+  
   @classmethod
   def create(cls, suffix):
+    # Creates a new suffix. Method ensures uniqueness
     Unique.check("suffix", suffix)
     a = Suffix(suffix=suffix, rand_num=random.random())
     a.put()
     return a
+
   @classmethod
   def getRandom(cls):
+    # Gets a random suffix from the datastore. Returns string
     rand_num = random.random()
     suffix = Suffix.all().order('rand_num').filter('rand_num >=', rand_num).get()
     if suffix is None:
@@ -88,6 +102,8 @@ class User(db.Model):
   
   @classmethod
   def isNotAvailable(cls, name):
+    # Returns whether a nickname is available or not.
+    # Returns True if the name is in use. False otherwise.
     if name is None:
         return True
     user = User.get_by_key_name(name)
@@ -95,8 +111,11 @@ class User(db.Model):
         user = User(key_name=name, usage=False)
         user.put()
     return user.usage
+
   @classmethod
   def claim(cls, name):
+    # Claims a nickname in the datastore, setting its
+    # usage flag to true.
     if name is None:
         return
     user = User.get_by_key_name(name)
@@ -104,8 +123,11 @@ class User(db.Model):
         user = User(key_name=name)
     user.usage = True
     user.put()
+    
   @classmethod
   def release(cls, name):
+    # Releases a nickname in the datastore, setting its
+    # usage flag to false.
     if name is None:
         return
     user = User.get_by_key_name(name)
@@ -113,8 +135,11 @@ class User(db.Model):
         user = User(key_name=name)
     user.usage = False
     user.put()
+    
   @classmethod
   def reset(cls):
+      # Resets a quantity of elements in the datastore.
+      # Use after multiple failed queries.
       query = User.all()
       entries = query.fetch(RESET_AMOUNT)
       db.delete(entries)
