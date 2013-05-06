@@ -316,7 +316,8 @@ $(document).ready(function() {
     // Show warning
     showMessage(myMessages[1]);
 
-    var name = randomNick();
+    // Nickname from templated nickname div
+    var name = $('#nickname').html();
     ChatApp.nickname = name;
     ChatApp.room = name + id_gen() + "@" + ChatApp.CONF_ADDR;
 
@@ -473,6 +474,14 @@ $(document).bind('connected', function() {
 });
 
 $(document).bind('disconnected', function() {
+	//Call the url that removes the nickname claim appengine side
+	var xhr = new XMLHttpRequest();
+	xhr
+			.open('POST', '/disconnect/?from='+ChatApp.nickname,
+					true);
+	xhr.send();
+	
+	//Kill the Strophe connection
     ChatApp.connection = null;
     $('#room-name').empty();
     $('#room-topic').empty();
@@ -480,6 +489,7 @@ $(document).bind('disconnected', function() {
     $('#chat').empty();
     $('#login_dialog').dialog('open');
     $('#leave').closest('.ui-btn').hide();
+    
 });
 
 $(document).bind('room_joined', function() {

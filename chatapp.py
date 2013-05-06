@@ -3,7 +3,6 @@ import os
 import webapp2
 
 from google.appengine.api import users
-from google.appengine.ext import ndb
 from google.appengine.api import mail
 from google.appengine.ext.webapp import template
 
@@ -21,28 +20,28 @@ jinja_environment = jinja2.Environment(
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        name = None
+        nickname = None
         count = 0
-        while models.User.check(name):
+        while models.User.check(nickname):
           prefix = models.Prefix.get()
           body = models.Body.get()
           suffix = models.Suffix.get()
 
-          name = prefix + body + suffix
+          nickname = prefix + body + suffix
           count = count + 1
           if count > 100:
               count = 0
               models.User.reset()
               
-        template_values = {'name': name}            
+        template_values = {'nickname': nickname}            
         path = os.path.join(os.path.dirname(__file__), 'index.html')
         self.response.out.write(template.render(path, template_values))
 
 class DisconnectHandler(webapp2.RequestHandler):
   def post(self):
     # In the handler for _ah/channel/disconnected/
-    client_id = self.request.get('from')
-    models.User.set(client_id, False)
+    nickname = self.request.get('from')
+    models.User.set(nickname, False)
     self.response.out.write('none')
 
 class SendChatLog(webapp2.RequestHandler):
