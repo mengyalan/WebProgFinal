@@ -34,7 +34,10 @@ class Prefix(db.Model):
   @classmethod
   def create(cls, prefix):
     # Creates a new prefix. Method ensures uniqueness
-    Unique.check("prefix", prefix)
+    try:
+        Unique.check("prefix", prefix)
+    except UniqueConstraintViolation:
+        return None
     a = Prefix(prefix=prefix, rand_num=random.random())
     a.put()
     return a
@@ -57,7 +60,10 @@ class Body(db.Model):
   @classmethod
   def create(cls, body):
     # Creates a new word-body. Method ensures uniqueness
-    Unique.check("body", body)
+    try:
+        Unique.check("body", body)
+    except UniqueConstraintViolation:
+        return None
     a = Body(body=body, rand_num=random.random())
     a.put()
     return a
@@ -80,7 +86,10 @@ class Suffix(db.Model):
   @classmethod
   def create(cls, suffix):
     # Creates a new suffix. Method ensures uniqueness
-    Unique.check("suffix", suffix)
+    try:
+        Unique.check("suffix", suffix)
+    except UniqueConstraintViolation:
+        return None
     a = Suffix(suffix=suffix, rand_num=random.random())
     a.put()
     return a
@@ -141,80 +150,26 @@ class User(db.Model):
       # Resets a quantity of elements in the datastore.
       # Use after multiple failed queries.
       query = User.all()
-      entries = query.fetch(RESET_AMOUNT)
+      entries = query.fetch(cls.RESET_AMOUNT)
       db.delete(entries)
 
-try:
-    Prefix.create('atri')
-except UniqueConstraintViolation:
-    pass
-try:
-    Prefix.create('nigri')
-except UniqueConstraintViolation:
-    pass
-try:
-    Prefix.create('melano')
-except UniqueConstraintViolation:
-    pass
-try:
-    Prefix.create('cerule')
-except UniqueConstraintViolation:
-    pass
-try:
-    Prefix.create('cyano')
-except UniqueConstraintViolation:
-    pass
-try:
-    Prefix.create('viridi')
-except UniqueConstraintViolation:
-    pass
+Prefix.create('atri')
+Prefix.create('nigri')
+Prefix.create('melano')
+Prefix.create('cerule')
+Prefix.create('cyano')
+Prefix.create('viridi')
 
-try:
-    Body.create('rostr')
-except UniqueConstraintViolation:
-    pass
-try:
-    Body.create('rhyncho')
-except UniqueConstraintViolation:
-    pass
-try:
-    Body.create('ungui')
-except UniqueConstraintViolation:
-    pass
-try:
-    Body.create('chelo')
-except UniqueConstraintViolation:
-    pass
-try:
-    Body.create('onycho')
-except UniqueConstraintViolation:
-    pass
-try:
-    Body.create('pedi')
-except UniqueConstraintViolation:
-    pass
+Body.create('rostr')
+Body.create('rhyncho')
+Body.create('ungui')
+Body.create('chelo')
+Body.create('onycho')
+Body.create('pedi')
 
-try:
-    Suffix.create('saurus')
-except UniqueConstraintViolation:
-    pass
-try:
-    Suffix.create('raptor')
-except UniqueConstraintViolation:
-    pass
-try:
-    Suffix.create('don')
-except UniqueConstraintViolation:
-    pass
-try:
-    Suffix.create('ceratops')
-except UniqueConstraintViolation:
-    pass
-try:
-    Suffix.create('stuthio')
-except UniqueConstraintViolation:
-    pass
-try:
-    Suffix.create('nyx')
-except UniqueConstraintViolation:
-    pass
+Suffix.create('saurus')
+Suffix.create('raptor')
+Suffix.create('don')
+Suffix.create('ceratops')
+Suffix.create('stuthio')
+Suffix.create('nyx')

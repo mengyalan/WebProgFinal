@@ -30,7 +30,7 @@ class MainPage(webapp2.RequestHandler):
           # If 100 instances are called unsuccessfully
           # reset the User datastore and deal with the
           # consequences. 
-          if count > RESET_COUNT:
+          if count > self.RESET_COUNT:
               models.User.reset()
               count = 0
         
