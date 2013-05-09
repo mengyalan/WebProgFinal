@@ -52,9 +52,11 @@ class DisconnectHandler(webapp2.RequestHandler):
 class SendChatLog(webapp2.RequestHandler):
     def post(self):
         log = self.request.get('log')
+        address = self.request.get('address')
+        nickname = self.request.get('nickname')
         librarian = "UIUC Librarian <michaelkanglu@gmail.com>"
         title = "Your Chat History with UIUC Library"
-        patron = "Patron <mengyalan@gmail.com>"
+        patron = nickname + " <" + address + ">"
         # email = self.request.get('email')
         # nickname = self.request.get('nickname')
         # patron = nickname + ' <' + email + '>'
