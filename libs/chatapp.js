@@ -1,114 +1,13 @@
-sanitize = function(html, settings) {
-    settings = settings || {};
-    var sanitized = '';
-
-    function advance(n) {
-        if ( typeof n === 'string') {
-            sanitized += n;
-            n = n.length;
-        }
-        html = html.slice(n);
-    }
-
-    var match;
-    while (html.length) {
-        if ( match = html.match(/^[^<]+/)) {// cdata
-            sanitized += match[0].replace(/>/g, '&gt;')
-            advance(match[0].length);
-            continue;
-        }
-
-        var endPos = html.indexOf('>');
-
-        if (endPos === -1) {
-            // discard tag
-            advance(html.length);
-            continue;
-        }
-
-        var tag = html.slice(0, endPos + 1);
-
-        if ( match = tag.match(/^<\/([a-zA-Z]+)>$/)) {// end tag
-            var tagName = match[1];
-            advance(settings[tagName] ? match[0] : match[0].length);
-            continue;
-        }
-
-        if ( match = tag.match(/^<([a-zA-Z]+)(?:\s+(.+))?\s*\/?>$/)) {
-            var tagName = match[1].toLowerCase(), attrs = match[2];
-
-            if (settings[tagName]) {
-                var attributes = {};
-                while (attrs) {// read attributes
-                    var key = attrs.match(/^[a-zA-Z]+/);
-                    if (!key)
-                        break;
-                    key = key[0];
-                    attrs = attrs.slice(key.length);
-
-                    if (attrs[0] === '=') {
-                        attrs = attrs.slice(1);
-                        if (/['"]/.exec(attrs[0])) {
-                            var quote = attrs[0];
-                            var closingPos = attrs.indexOf(quote, 1);
-                            if (closingPos === -1)
-                                break;
-                            attributes[key] = attrs.slice(1, closingPos);
-                            attrs = attrs.slice(closingPos + 1);
-                        } else if (!attrs[0].exec(/\s/)) {
-                            var value = attrs.match(/^[^\s]+/);
-                            if (!value)
-                                break;
-                            value = value[0];
-                            attrs = attrs.slice(value.length);
-                            attributes[key] = value;
-                        } else {
-                            break;
-                        }
-                    } else if (attrs[0].exec(/\s/)) {
-                        attributes[key] = key;
-                    } else {
-                        break;
-                    }
-
-                    var ws = attrs.match(/^\s+/);
-                    if (!ws)
-                        break;
-                    attrs = attrs.slice(ws[0].length);
-                }
-
-                sanitized += '<' + tagName;
-
-                // validate and write attributes
-                for (var key in attributes) {
-                    var validator;
-                    if (attributes.hasOwnProperty(key) && ( validator = settings[tagName][key])) {
-                        var value = attributes[key].replace(/"/g, '&quot;');
-                        if ( typeof validator === 'function' && !validator(value))
-                            continue;
-                        sanitized += ' ' + key + '="' + value + '"';
-                    }
-                }
-
-                sanitized += '>';
-            }
-        }
-
-        advance(tag.length);
-    }
-
-    return sanitized;
-}
 var ChatApp = {
     connection : null,
     room : null,
     nickname : null,
 
     NS_MUC : "http://jabber.org/protocol/muc",
-    SERVER : "chatdev.library.illinois.edu",
-    CONF_ADDR : "conference.chatdev.library.illinois.edu",
-    BOT : "bot@chatdev.library.illinois.edu",
-    BOT_SMACK : "bot@chatdev.library.illinois.edu/Smack",
+    SERVER : "mengyalan.com",
+    CONF_ADDR : "conference.mengyalan.com",
+    BOT : "bot@mengyalan.com",
+    BOT_SMACK : "bot@mengyalan.com/Smack",
     bot_in_room : false,
     room_created : false,
     joined : null,
@@ -179,6 +78,8 @@ var ChatApp = {
         var from = $(message).attr('from');
         var room = Strophe.getBareJidFromJid(from);
         var nick = Strophe.getResourceFromJid(from);
+        var nickname = nick;
+        var isbot = false;
 
         // make sure message is from the right place
         if (room === ChatApp.room) {
@@ -189,8 +90,17 @@ var ChatApp = {
             var nick_class = "nick";
             if (nick === ChatApp.nickname) {
                 nick_class += " self";
+                nickname = nick + "(you)";
             } else {
                 notify = true;
+                if (nick) {
+                    if (nick === ChatApp.BOT_SMACK) {
+                        nickname = 'Zombie Librarian';
+                        isbot = true;
+                    } else if (nick.indexOf('@')) {
+                        nickname = nick.substring(0, nick.indexOf('@'));
+                    }
+                }
             }
 
             var body = $(message).children('body').text();
@@ -213,15 +123,20 @@ var ChatApp = {
                         document.getElementById('notification').play();
                         pushNotification('Librarian has a new response!', body);
                     }
-                    ChatApp.add_message("<div class='message" + delay_css + "'>" + "&lt;<span class='" + nick_class + "'>" + nick + "</span>&gt; <span class='body'>" + body + "</span></div>");
+                    if (isbot) {
+                        ChatApp.add_message("<div class='notice'>" + body + "!</div>");
+                    } else {
+                        ChatApp.add_message("<div class='message" + delay_css + "'>" + "&lt;<span class='" + nick_class + "'>" + nickname + "</span>&gt; <span class='body'>" + body + "</span></div>");
+                    }
                 } else {
-                    ChatApp.add_message("<div class='message action " + delay_css + "'>" + "* " + nick + " " + action[1] + "</div>");
+                    ChatApp.add_message("<div class='message action " + delay_css + "'>" + "* " + nickname + " " + action[1] + "</div>");
                 }
             } else {
                 if (body.search('unlocked') > 0) {
                     ChatApp.unlocked = true;
+                    ChatApp.add_message("<div class='notice'>You are now successfully connected to Ask A Librarian. Ask away! </div>");
                 }
-                ChatApp.add_message("<div class='notice'>*** " + body + "</div>");
+                //ChatApp.add_message("<div class='notice'>" + body + "</div>");
             }
         }
 
@@ -302,6 +217,29 @@ $(document).ready(function() {
             type : "unavailable"
         }));
         ChatApp.connection.disconnect();
+    });
+
+    $('#email').click(function() {
+
+        var address = prompt("Please enter your email address", "email@example.com");
+        if (email != null) {
+            $.ajax({
+                type : 'POST',
+                url : '/email',
+                data : {
+                    log : $('#chat').html(),
+                    email : address,
+                    nickname : "Patron"
+                },
+                dataType : 'json',
+                success : function(resp) {
+                    console.info("Ajax Response is there.....");
+                    console.log(resp);
+                }
+            });
+        } else {
+            alert('Invalid email address!');
+        }
     });
 
     $('#send').click(function() {
@@ -406,7 +344,7 @@ function sendMessage(body) {
 
 
 $(document).bind('connect', function() {
-    ChatApp.connection = new Strophe.Connection('/xmpp-httpbind');
+    ChatApp.connection = new Strophe.Connection('http://bosh.metajack.im:5280/xmpp-httpbind');
 
     ChatApp.connection.connect(ChatApp.SERVER, null, function(status) {
         if (status === Strophe.Status.CONNECTED) {
@@ -457,6 +395,7 @@ $(document).bind('disconnected', function() {
     $('#room-topic').empty();
     $('#participant-list').empty();
     $('#chat').empty();
+    $('#email').attr('disabled', 'disabled');
     $('#login_dialog').dialog('open');
     $('#leave').closest('.ui-btn').hide();
 
@@ -466,14 +405,122 @@ $(document).bind('room_joined', function() {
     ChatApp.joined = true;
 
     $('#leave').closest('.ui-btn').show();
+    $('#email').closest('.ui-btn').show();
 
-    ChatApp.add_message("<div class='notice'>*** Room joined.</div>")
+    //ChatApp.add_message("<div class='notice'>*** Room joined.</div>")
+    //ChatApp.add_message("<div class='notice'>You are now successfully connected to Ask A Librarian. Ask away!</div>")
+
 });
 
 $(document).bind('user_joined', function(ev, nick) {
-    ChatApp.add_message("<div class='notice'>*** " + nick + " joined.</div>");
+    //ChatApp.add_message("<div class='notice'>*** " + nick + " joined.</div>");
+    //ChatApp.add_message("<div class='notice'> Your friendly neighborhood librarian " + nick + " has come to assist you.</div>");
 });
 
 $(document).bind('user_left', function(ev, nick) {
-    ChatApp.add_message("<div class='notice'>*** " + nick + " left.</div>");
+    //ChatApp.add_message("<div class='notice'>*** " + nick + " left.</div>");
+    //ChatApp.add_message("<div class='notice'> Librarian  " + nick + " has left the conversation. If you still have any more questions, feel free to send it to us and we will have someone coming to assist you. </div>");
+
 });
+
+sanitize = function(html, settings) {
+    settings = settings || {};
+    var sanitized = '';
+
+    function advance(n) {
+        if ( typeof n === 'string') {
+            sanitized += n;
+            n = n.length;
+        }
+        html = html.slice(n);
+    }
+
+    var match;
+    while (html.length) {
+        if ( match = html.match(/^[^<]+/)) {// cdata
+            sanitized += match[0].replace(/>/g, '&gt;')
+            advance(match[0].length);
+            continue;
+        }
+
+        var endPos = html.indexOf('>');
+
+        if (endPos === -1) {
+            // discard tag
+            advance(html.length);
+            continue;
+        }
+
+        var tag = html.slice(0, endPos + 1);
+
+        if ( match = tag.match(/^<\/([a-zA-Z]+)>$/)) {// end tag
+            var tagName = match[1];
+            advance(settings[tagName] ? match[0] : match[0].length);
+            continue;
+        }
+
+        if ( match = tag.match(/^<([a-zA-Z]+)(?:\s+(.+))?\s*\/?>$/)) {
+            var tagName = match[1].toLowerCase(), attrs = match[2];
+
+            if (settings[tagName]) {
+                var attributes = {};
+                while (attrs) {// read attributes
+                    var key = attrs.match(/^[a-zA-Z]+/);
+                    if (!key)
+                        break;
+                    key = key[0];
+                    attrs = attrs.slice(key.length);
+
+                    if (attrs[0] === '=') {
+                        attrs = attrs.slice(1);
+                        if (/['"]/.exec(attrs[0])) {
+                            var quote = attrs[0];
+                            var closingPos = attrs.indexOf(quote, 1);
+                            if (closingPos === -1)
+                                break;
+                            attributes[key] = attrs.slice(1, closingPos);
+                            attrs = attrs.slice(closingPos + 1);
+                        } else if (!attrs[0].exec(/\s/)) {
+                            var value = attrs.match(/^[^\s]+/);
+                            if (!value)
+                                break;
+                            value = value[0];
+                            attrs = attrs.slice(value.length);
+                            attributes[key] = value;
+                        } else {
+                            break;
+                        }
+                    } else if (attrs[0].exec(/\s/)) {
+                        attributes[key] = key;
+                    } else {
+                        break;
+                    }
+
+                    var ws = attrs.match(/^\s+/);
+                    if (!ws)
+                        break;
+                    attrs = attrs.slice(ws[0].length);
+                }
+
+                sanitized += '<' + tagName;
+
+                // validate and write attributes
+                for (var key in attributes) {
+                    var validator;
+                    if (attributes.hasOwnProperty(key) && ( validator = settings[tagName][key])) {
+                        var value = attributes[key].replace(/"/g, '&quot;');
+                        if ( typeof validator === 'function' && !validator(value))
+                            continue;
+                        sanitized += ' ' + key + '="' + value + '"';
+                    }
+                }
+
+                sanitized += '>';
+            }
+        }
+
+        advance(tag.length);
+    }
+
+    return sanitized;
+}
