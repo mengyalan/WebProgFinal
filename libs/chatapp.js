@@ -228,8 +228,8 @@ $(document).ready(function() {
                 url : '/email',
                 data : {
                     log : $('#chat').html(),
-                    email : address,
-                    nickname : "Patron"
+                    address : address,
+                    nickname : "Library Patron" + ChatApp.nickname
                 },
                 dataType : 'json',
                 success : function(resp) {
@@ -267,6 +267,7 @@ $(document).ready(function() {
         });
     }
     $('#leave').closest('.ui-btn').hide();
+    $('#email').closest('.ui-btn').hide();
 });
 $(window).ready(updateHeight);
 $(window).resize(updateHeight);
@@ -395,7 +396,7 @@ $(document).bind('disconnected', function() {
     $('#room-topic').empty();
     $('#participant-list').empty();
     $('#chat').empty();
-    $('#email').attr('disabled', 'disabled');
+    $('#email').closest('.ui-btn').hide();
     $('#login_dialog').dialog('open');
     $('#leave').closest('.ui-btn').hide();
 
