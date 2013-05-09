@@ -1,26 +1,3 @@
-var myMessages = ['info', 'warning', 'error', 'success'];
-
-function hideAllMessages() {
-    var messagesHeights = new Array();
-    // this array will store height for each
-
-    for ( i = 0; i < myMessages.length; i++) {
-        messagesHeights[i] = $('.' + myMessages[i]).outerHeight();
-        // fill array
-        $('.' + myMessages[i]).css('top', -messagesHeights[i]);
-        //move element outside viewport
-    }
-}
-
-function showMessage(type) {
-    $('.' + type + '-trigger').click(function() {
-        hideAllMessages();
-        $('.' + type).animate({
-            top : "0"
-        }, 500);
-    });
-}
-
 sanitize = function(html, settings) {
     settings = settings || {};
     var sanitized = '';
@@ -311,11 +288,6 @@ $(window).unload(function() {
 });
 
 $(document).ready(function() {
-    // Initially, hide all messages
-    hideAllMessages();
-    // Show warning
-    showMessage(myMessages[1]);
-
     // Nickname from templated nickname div
     var name = $('#nickname').html();
     ChatApp.nickname = name;
@@ -474,14 +446,12 @@ $(document).bind('connected', function() {
 });
 
 $(document).bind('disconnected', function() {
-	//Call the url that removes the nickname claim appengine side
-	var xhr = new XMLHttpRequest();
-	xhr
-			.open('POST', '/disconnect/?from='+ChatApp.nickname,
-					true);
-	xhr.send();
-	
-	//Kill the Strophe connection
+    //Call the url that removes the nickname claim appengine side
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/disconnect/?from=' + ChatApp.nickname, true);
+    xhr.send();
+
+    //Kill the Strophe connection
     ChatApp.connection = null;
     $('#room-name').empty();
     $('#room-topic').empty();
@@ -489,7 +459,7 @@ $(document).bind('disconnected', function() {
     $('#chat').empty();
     $('#login_dialog').dialog('open');
     $('#leave').closest('.ui-btn').hide();
-    
+
 });
 
 $(document).bind('room_joined', function() {
