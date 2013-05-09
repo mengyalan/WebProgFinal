@@ -3,6 +3,13 @@ The app is up and running at http://librarywebchat.appspot.com/
 Note: when you open the webapp, if you do not receive automatic welcome message "You are now successfully connected to Ask A Librarian. Ask away!
 ", it means our backend on the library server must be down. Please contact mengyalan@gmail.com.
 
+Currently we have issues with running alternate librarian apps so there is no way for a librarian to connect and chat with the webapp.
+This does not inhibit the functionality of the patron app from a technical level as it still connects to and communicates with the server.
+In this way, you can see all the features demonstrated for sending and receiving messages, emailing logs, and name generation.
+
+Python tests run from http://librarywebchat.appspot.com/test
+
+
 
 - Use at least one Javascript library that you didn't write.
 JQuery & Jquery Mobile UI, Strophe
